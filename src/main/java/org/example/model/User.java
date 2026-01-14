@@ -1,24 +1,80 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.hibernate.generator.EventType;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+@Data
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User implements UserDetails {
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+    @JsonIgnore
+    @Column(name = "passwordhash", nullable = false)
+    private String passwordHash;
 
-    private String roles; // simple CSV roles e.g. ROLE_USER,ROLE_ADMIN
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+    //@Column(name = "created_at", nullable = false, updatable = false, insertable = true)
+    //@org.hibernate.annotations.Generated(event = org.hibernate.generator.EventType.INSERT)
+    private Instant createdAt = Instant.now();
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name().toUpperCase()));
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
+
 }

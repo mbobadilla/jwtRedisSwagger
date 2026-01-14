@@ -1,55 +1,54 @@
 package org.example.controller;
 
-import org.example.model.Login;
-import org.example.controller.LoginRequest;
-import org.example.repository.LoginRepository;
+import org.example.model.User;
 import org.example.repository.UserRepository;
 import org.example.security.JwtUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authManager;
+    private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
-    private final LoginRepository repo;
-    private final PasswordEncoder encoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthController(AuthenticationManager am, JwtUtils jwtUtils, LoginRepository repo, PasswordEncoder encoder) {
-        this.authManager = am;
+    public AuthController(UserRepository userRepository, JwtUtils jwtUtils) {
+        this.userRepository = userRepository;
         this.jwtUtils = jwtUtils;
-        this.repo = repo;
-        this.encoder = encoder;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
-
-    record LoginRequest(String username, String password) {}
-    record AuthResponse(String token) {}
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(req.username(), req.password()));
-        String token = jwtUtils.generateToken(req.username());
-        return ResponseEntity.ok(new AuthResponse(token));
-    }
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        // 1. Buscar al usuario por email
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody LoginRequest req) {
-        if (repo.findByUsername(req.username()).isPresent()) {
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
 
-            return ResponseEntity.badRequest().body("Usuario ya existe");
+            // 2. Comparar la contraseña enviada con el hash de la DB
+            if (passwordEncoder.matches(request.getPasswordhash(), user.getPasswordHash())) {
+
+                // 3. Si coincide, generar el token
+                String token = jwtUtils.generateToken(user.getUsername());
+
+                return ResponseEntity.ok(new AuthResponse(token));
+            }
         }
-        Login u = Login.builder()
-                .username(req.username())
-                .password(encoder.encode(req.password()))
-                .idStatus(1)
 
-                .build();
-        repo.save(u);
-        return ResponseEntity.ok("Registrado");
+        // 4. Si no existe o la clave es incorrecta, error 401
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Credenciales incorrectas");
     }
+
+
 }

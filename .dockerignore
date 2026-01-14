@@ -1,0 +1,16 @@
+# Crea `.dockerignore`
+cat > .dockerignore <<'IGNORE'
+target
+.idea
+.vscode
+.git
+*.iml
+IGNORE
+
+# Comandos útiles:
+# docker compose build
+# docker compose up -d
+# Alternativa (si ya generaste el jar localmente):
+# mvn -DskipTests package
+# docker build -t myapp .
+# docker run -p 8080:8080 myapp

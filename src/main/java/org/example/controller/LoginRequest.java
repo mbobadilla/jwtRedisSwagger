@@ -1,6 +1,12 @@
 package org.example.controller;
 
+import lombok.Data;
+import org.example.model.Role;
+
+@Data
 public class LoginRequest {
-    private String username;
-    private String password;
+    private String email;
+    private String passwordhash;
+    private Role role;
+
 }

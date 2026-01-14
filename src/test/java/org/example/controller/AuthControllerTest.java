@@ -1,8 +1,6 @@
 package org.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.model.Login;
-import org.example.repository.LoginRepository;
 import org.example.security.JwtUtils;
 import org.example.service.JpaUserDetailsService;
 import org.junit.jupiter.api.Test;
