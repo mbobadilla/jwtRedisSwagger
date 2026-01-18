@@ -19,6 +19,18 @@ spring:
   redis:
     host: localhost
     port: 6379
+  cache:
+     type: redis
+     redis:
+
+      time-to-live: 3600000
+        # Evita que se guarden valores nulos en la caché
+      cache-null-values: false
+
+
+
+
+
 
 jwt:
   secret: CHANGE_ME_BASE64_ENCODED_SECRET_32_BYTES==
@@ -52,3 +64,5 @@ springdoc:
           max-file-size: 10MB
           max-history: 30
           total-size-cap: 1GB
+
+
