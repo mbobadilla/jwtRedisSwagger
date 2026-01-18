@@ -36,3 +36,17 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Java y Maven
+target/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+
+# Log y Temporales
+*.log
+
+# Secretos (¡IMPORTANTE!)
+.env
