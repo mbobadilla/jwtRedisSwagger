@@ -4,7 +4,8 @@ server:
 spring:
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/ofertaApp
+    #url: jdbc:postgresql://localhost:5432/ofertaAp
+    url: jdbc:postgresql://neondb_owner:npg_xpP1WT3ArlzL@ep-hidden-unit-ahlpyom2-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
@@ -33,7 +34,7 @@ spring:
 
 
 jwt:
-  secret: CHANGE_ME_BASE64_ENCODED_SECRET_32_BYTES==
+  secret: VGhpcyBJcyBBIFZlcnkgTG9uZyBTZWNyZXQgS2V5IEZvciBKV1QgVG8gU2F0aXNmeSAyNTYgQml0cw==
   expiration-ms: 3600000
 
 springdoc:

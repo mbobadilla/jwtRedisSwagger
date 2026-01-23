@@ -1,14 +1,14 @@
-# Crea `Dockerfile`
-cat > Dockerfile <<'DOCKERFILE'
-FROM maven:3.9.4-eclipse-temurin-17 AS build
+# Etapa de compilación
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn -B -DskipTests package
+COPY . .
+RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:17-jre
+# Etapa de ejecución
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
+
+# Cloud Run requiere el puerto 8081
 EXPOSE 8081
-ENTRYPOINT ["java","-jar","/app/app.jar"]
-DOCKERFILE COPY . /app
+ENTRYPOINT ["java", "-jar", "app.jar"]
