@@ -20,9 +20,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // 🚫 Nueva forma de deshabilitar CSRF:
+
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable())
-                // 🔓 Configurar permisos de endpoints:
+                .cors(org.springframework.security.config.Customizer.withDefaults())                // 🔓 Configurar permisos de endpoints:
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/users/register",
